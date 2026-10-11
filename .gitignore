@@ -1,0 +1,14 @@
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary & Deployment Files
+.netlify/
+*.log
+download_assets.js
+AGENTS.md
+
+# IDE
+.idea/
+.vscode/
