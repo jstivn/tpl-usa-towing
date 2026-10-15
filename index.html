@@ -390,7 +390,9 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#2d323c]">
         
         <div class="pt-3 sm:pt-0 sm:px-4">
-          <div class="text-3xl sm:text-4xl font-black text-[#f2c519] font-heading leading-none">15–20 MIN</div>
+          <div class="text-3xl sm:text-4xl font-black text-[#f2c519] font-heading leading-none">
+            <span data-counter-target="20" data-counter-prefix="15–" data-counter-suffix=" MIN">15–20 MIN</span>
+          </div>
           <div class="text-xs font-bold uppercase tracking-wider text-white mt-1">HIGHWAY RESPONSE</div>
           <p class="text-[11px] text-slate-400 mt-1 leading-snug">Stationed at Miami Design District with instant access to I-95, Palmetto (SR 826) &amp; Dolphin Expressway.</p>
         </div>
@@ -402,13 +404,17 @@
         </div>
 
         <div class="pt-3 sm:pt-0 sm:px-4">
-          <div class="text-3xl sm:text-4xl font-black text-white font-heading leading-none">12,000 LBS</div>
+          <div class="text-3xl sm:text-4xl font-black text-white font-heading leading-none">
+            <span data-counter-target="12000" data-counter-suffix=" LBS" data-counter-format="comma">12,000 LBS</span>
+          </div>
           <div class="text-xs font-bold uppercase tracking-wider text-[#f2c519] mt-1">COMMERCIAL WINCH RIG</div>
           <p class="text-[11px] text-slate-400 mt-1 leading-snug">Heavy recovery rating for full-size lifted trucks, off-road mud extraction, and Everglades canal pull-outs.</p>
         </div>
 
         <div class="pt-3 sm:pt-0 sm:px-4">
-          <div class="text-3xl sm:text-4xl font-black text-[#f2c519] font-heading leading-none">$85 USD</div>
+          <div class="text-3xl sm:text-4xl font-black text-[#f2c519] font-heading leading-none">
+            <span data-counter-target="85" data-counter-prefix="$" data-counter-suffix=" USD">$85 USD</span>
+          </div>
           <div class="text-xs font-bold uppercase tracking-wider text-white mt-1">FIXED UPFRONT RATE</div>
           <p class="text-[11px] text-slate-400 mt-1 leading-snug">Guaranteed quote locked over phone or SMS before our driver rolls. Florida DOT regulated, no surprises.</p>
         </div>
@@ -935,22 +941,30 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
         
         <div>
-          <div class="text-4xl sm:text-5xl font-black text-[#f2c519] font-heading">15,000+</div>
+          <div class="text-4xl sm:text-5xl font-black text-[#f2c519] font-heading flex items-center justify-center">
+            <span data-counter-target="15000" data-counter-suffix="+" data-counter-format="comma">15,000+</span>
+          </div>
           <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Vehicles Safely Towed</div>
         </div>
 
         <div>
-          <div class="text-4xl sm:text-5xl font-black text-white font-heading">15–20 MIN</div>
+          <div class="text-4xl sm:text-5xl font-black text-white font-heading flex items-center justify-center">
+            <span data-counter-target="20" data-counter-prefix="15–" data-counter-suffix=" MIN">15–20 MIN</span>
+          </div>
           <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Average Arrival Time</div>
         </div>
 
         <div>
-          <div class="text-4xl sm:text-5xl font-black text-[#f2c519] font-heading">24/7</div>
+          <div class="text-4xl sm:text-5xl font-black text-[#f2c519] font-heading flex items-center justify-center">
+            <span data-counter-target="24" data-counter-suffix="/7">24/7</span>
+          </div>
           <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Live Highway Standby</div>
         </div>
 
         <div>
-          <div class="text-4xl sm:text-5xl font-black text-white font-heading">100%</div>
+          <div class="text-4xl sm:text-5xl font-black text-white font-heading flex items-center justify-center">
+            <span data-counter-target="100" data-counter-suffix="%">100%</span>
+          </div>
           <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Zero-Damage Guarantee</div>
         </div>
 
@@ -1268,6 +1282,71 @@
       const vehicleText = document.querySelector('input[name="calcVehicle"]:checked').parentElement.innerText.trim();
       const msg = encodeURIComponent(`Hello Dispatch, I calculated flatbed towing for ${vehicleText} ($${total} USD). Please dispatch truck to my GPS location:`);
       document.getElementById('calcSmsBtn').href = `sms:+13055550199?&body=${msg}`;
+    }
+
+    // Animated Smooth Number Count-Up on Scroll
+    function initCounters() {
+      const counterElements = document.querySelectorAll('[data-counter-target]');
+      if (!counterElements.length) return;
+
+      const animatedElements = new Set();
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            if (!animatedElements.has(el)) {
+              animatedElements.add(el);
+              animateValue(el);
+            }
+          }
+        });
+      }, { threshold: 0.2 });
+
+      counterElements.forEach(el => observer.observe(el));
+
+      function animateValue(el) {
+        const target = parseFloat(el.getAttribute('data-counter-target'));
+        const prefix = el.getAttribute('data-counter-prefix') || '';
+        const suffix = el.getAttribute('data-counter-suffix') || '';
+        const format = el.getAttribute('data-counter-format');
+        const duration = 1600; // 1.6s smooth duration
+        const startTime = performance.now();
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // Easing: easeOutExpo (starts fast, slows down gently into the exact number)
+          const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+          const current = Math.round(ease * target);
+
+          let formattedNum = current.toString();
+          if (format === 'comma') {
+            formattedNum = current.toLocaleString('en-US');
+          }
+
+          el.innerText = prefix + formattedNum + suffix;
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            let finalFormatted = target.toString();
+            if (format === 'comma') {
+              finalFormatted = target.toLocaleString('en-US');
+            }
+            el.innerText = prefix + finalFormatted + suffix;
+          }
+        }
+
+        requestAnimationFrame(step);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCounters);
+    } else {
+      initCounters();
     }
   </script>
 
